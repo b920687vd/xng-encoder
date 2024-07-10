@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图文解码器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .container {
+            margin: 20px;
+        }
+        .result-img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>图文解码器</h1>
+    
+    <div class="container">
+        <h2>上传图片</h2>
+        <input type="file" id="imageInput" accept="application/x-zip-compressed">
+        <p id="base64Output"></p>
+        <button onclick="convertToBase64()">下载编码文件</button>
+    </div>
+
+    <script>
+        let base64String = '';
+
+        function convertToBase64() {
+            const file = document.getElementById('imageInput').files[0];
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                base64String = reader.result;
+                downloadBase64File();
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please select an image file first.');
+            }
+        }
+
+        function downloadBase64File() {
+            if (!base64String) {
+                alert('No Base64 string to download. Please convert an image first.');
+                return;
+            }
+            const blob = new Blob([base64String], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'image.xng';
+            link.click();
+        }
+
+        function decodeBase64() {
+            const file = document.getElementById('xngInput').files[0];
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                const base64 = reader.result;
+                
+                var arr = base64.split(","),
+                mime = "application/x-zip-compressed",
+                bstr = atob(arr[1]),
+                n = bstr.length,
+                u8arr = new Uint8Array(n);
+              while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+              }
+             const blob = new Blob([u8arr], {
+                type: mime,
+              });
+            	const link = document.createElement('a');
+            	link.href = URL.createObjectURL(blob);
+            	link.download = 'image.zip';
+            	link.click();
+                /*
+                const img = new Image();
+                img.src = decodedString;
+                img.className = 'result-img';
+                const outputDiv = document.getElementById('imageOutput');
+                outputDiv.innerHTML = '';
+                outputDiv.appendChild(img);
+                */
+            };
+            if (file) {
+                reader.readAsText(file);
+            } else {
+                alert('Please select a .xng file first.');
+            }
+        }
+    </script>
+</body>
+</html>
